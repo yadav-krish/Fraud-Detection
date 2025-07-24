@@ -33,6 +33,22 @@ st.markdown("""
             font-weight:bold;
             text-align:center;
             }
+            .custom-info-box {
+    background-color: #e3f2fd;
+    border-left: 6px solid #2196f3;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: #0d47a1;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+.custom-info-box code {
+    background: #6D8196;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
            </style>
            """, unsafe_allow_html=True )
 
@@ -52,8 +68,15 @@ def load_model():
 
 # Main app
 def main():
-    st.title("🔒 Fraud Detection System")
-    st.write("Upload a CSV file or enter data manually to detect fraud")
+    # Header with logo and title
+    col1, col2 = st.columns([1, 6])
+    
+    with col1:
+        st.image("Gemini_Generated_Image_s13jxts13jxts13j.png", width=100)
+    
+    with col2:
+        st.title("🔒 Fraud Detection System")
+        st.write("Upload a CSV file or enter data manually to detect fraud")
 
     # Load model
     model = load_model()
@@ -66,6 +89,29 @@ def main():
     option = st.radio("Choose input method:", ["Upload CSV File", "Manual Input"])
 
     if option == "Upload CSV File":
+        st.markdown("""
+<div class="custom-info-box">
+<b>ℹ️ Expected CSV Columns</b><br><br>
+
+Your file must include these columns <b>in the same order</b>:
+
+<pre><code>step, amount, oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest,
+isFlaggedFraud, type_CASH_OUT, type_DEBIT, type_PAYMENT, type_TRANSFER</code></pre>
+
+<b>📄 Column Descriptions:</b><br>
+- <b>step</b>: Time step (1 unit = 1 hour)<br>
+- <b>amount</b>: Transaction amount in currency<br>
+- <b>oldbalanceOrg</b>: Balance of origin account before transaction<br>
+- <b>newbalanceOrig</b>: Balance of origin account after transaction<br>
+- <b>oldbalanceDest</b>: Balance of destination account before transaction<br>
+- <b>newbalanceDest</b>: Balance of destination account after transaction<br>
+- <b>isFlaggedFraud</b>: 1 if flagged as fraud by rules, else 0<br>
+- <b>type_*</b>: One-hot encoded transaction type flags<br><br>
+
+⚠️ <b>Note:</b> All column names are <code>case-sensitive</code> and must be present.<br>
+❌ The model won't work correctly if any column is missing or renamed.
+</div>
+""", unsafe_allow_html=True)
         st.subheader("📁 Upload CSV File")
 
         uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
